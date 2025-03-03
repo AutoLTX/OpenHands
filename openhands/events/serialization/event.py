@@ -20,8 +20,9 @@ TOP_KEYS = [
     'action',
     'observation',
     'tool_call_metadata',
+    'llm_metrics',
 ]
-UNDERSCORE_KEYS = ['id', 'timestamp', 'source', 'cause', 'tool_call_metadata']
+UNDERSCORE_KEYS = ['id', 'timestamp', 'source', 'cause', 'tool_call_metadata', 'llm_metrics']
 
 DELETE_FROM_TRAJECTORY_EXTRAS = {
     'screenshot',
@@ -54,6 +55,11 @@ def event_from_dict(data) -> 'Event':
                 value = EventSource(value)
             if key == 'tool_call_metadata':
                 value = ToolCallMetadata(**value)
+            if key == 'llm_metrics':
+                from openhands.llm.metrics import Metrics
+                value = Metrics()
+                value.accumulated_cost = data[key].get('accumulated_cost', 0.0)
+                # Add other metrics fields if needed
             setattr(evt, '_' + key, value)
     return evt
 
@@ -81,7 +87,10 @@ def event_to_dict(event: 'Event') -> dict:
             d['source'] = d['source'].value
         if key == 'tool_call_metadata' and 'tool_call_metadata' in d:
             d['tool_call_metadata'] = d['tool_call_metadata'].model_dump()
+        if key == 'llm_metrics' and 'llm_metrics' in d:
+            d['llm_metrics'] = d['llm_metrics'].get()
         props.pop(key, None)
+
     if 'security_risk' in props and props['security_risk'] is None:
         props.pop('security_risk')
     if 'action' in d:

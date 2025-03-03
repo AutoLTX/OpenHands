@@ -730,6 +730,9 @@ class AgentController:
                 == ActionConfirmationStatus.AWAITING_CONFIRMATION
             ):
                 await self.set_agent_state_to(AgentState.AWAITING_USER_CONFIRMATION)
+            action.llm_metrics = copy.deepcopy(self.agent.llm.metrics)
+            logger.info(f'[Agent Controller {self.id}] Original LLM metrics: {self.agent.llm.metrics}')
+            logger.info(f'[Agent Controller {self.id}] Copied action LLM metrics: {action.llm_metrics}')
             self.event_stream.add_event(action, action._source)  # type: ignore [attr-defined]
 
         await self.update_state_after_step()
