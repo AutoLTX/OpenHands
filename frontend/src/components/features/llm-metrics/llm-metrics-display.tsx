@@ -3,9 +3,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "#/store";
 
 export function LLMMetricsDisplay() {
+  const { isVisible } = useSelector((state: RootState) => state.costVisibility);
   const metrics = useSelector((state: RootState) => state.llmMetrics);
 
-  if (!metrics) {
+  if (!isVisible || !metrics) {
     return null;
   }
 
