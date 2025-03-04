@@ -51,6 +51,7 @@ function AppContent() {
   );
   const dispatch = useDispatch();
   const endSession = useEndSession();
+  const { isVisible } = useSelector((state: RootState) => state.costVisibility);
 
   const [width, setWidth] = React.useState(window.innerWidth);
 
@@ -123,6 +124,30 @@ function AppContent() {
         </div>
       );
     }
+
+    const leftPanel = isVisible ? (
+      <ResizablePanel
+        orientation={Orientation.VERTICAL}
+        className="grow h-full min-h-0 min-w-0"
+        initialSize={80}
+        firstClassName="rounded-xl overflow-hidden border border-neutral-600"
+        secondClassName="rounded-xl overflow-hidden border border-neutral-600 bg-base-secondary"
+        firstChild={
+          <Container
+            className="h-full overflow-scroll"
+            label="Cost & Usage"
+          >
+            <LLMMetricsDisplay />
+          </Container>
+        }
+        secondChild={<ChatInterface />}
+      />
+    ) : (
+      <div className="grow h-full min-h-0 min-w-0 rounded-xl overflow-hidden border border-neutral-600 bg-base-secondary">
+        <ChatInterface />
+      </div>
+    );
+
     return (
       <ResizablePanel
         orientation={Orientation.HORIZONTAL}
@@ -130,24 +155,7 @@ function AppContent() {
         initialSize={500}
         firstClassName="flex flex-col overflow-hidden"
         secondClassName="flex flex-col overflow-hidden"
-        firstChild={
-          <ResizablePanel
-            orientation={Orientation.VERTICAL}
-            className="grow h-full min-h-0 min-w-0"
-            initialSize={80}
-            firstClassName="rounded-xl overflow-hidden border border-neutral-600"
-            secondClassName="rounded-xl overflow-hidden border border-neutral-600 bg-base-secondary"
-            firstChild={
-              <Container
-                className="h-full overflow-scroll"
-                label="Cost & Usage"
-              >
-                <LLMMetricsDisplay />
-              </Container>
-            }
-            secondChild={<ChatInterface />}
-          />
-        }
+        firstChild={leftPanel}
         secondChild={
           <ResizablePanel
             orientation={Orientation.VERTICAL}
