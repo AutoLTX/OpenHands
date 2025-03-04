@@ -9,6 +9,7 @@ import { appendSecurityAnalyzerInput } from "#/state/security-analyzer-slice";
 import { setCode, setActiveFilepath } from "#/state/code-slice";
 import { appendJupyterInput } from "#/state/jupyter-slice";
 import { setCurStatusMessage } from "#/state/status-slice";
+import { updateLLMMetrics } from "#/state/llm-metrics-slice";
 import store from "#/store";
 import ActionType from "#/types/action-type";
 import {
@@ -81,32 +82,18 @@ const messageActions = {
   },
 };
 
-
 function showLLMMetricsAlert(message: ActionMessage) {
   const metrics = message.llm_metrics;
   const usage = message.tool_call_metadata?.model_response?.usage;
 
   if (!metrics && !usage) return;
 
-  const lines = ['LLM Information'];
-
-  // Add metrics information (if available)
-  if (metrics && metrics.accumulated_cost !== undefined) {
-    lines.push(`Accumulated Cost: $${metrics.accumulated_cost.toFixed(4)}`);
-  } else {
-    lines.push('Accumulated Cost: Not available');
-  }
-
-  // Add usage information (regardless of whether metrics exists)
-  if (usage) {
-    lines.push(`Prompt Tokens: ${usage.prompt_tokens}`);
-    lines.push(`Completion Tokens: ${usage.completion_tokens}`);
-    lines.push(`Total Tokens: ${usage.total_tokens}`);
-  } else {
-    lines.push('Token Usage: Not available');
-  }
-
-  alert(lines.join('\n'));
+  store.dispatch(updateLLMMetrics({
+    accumulatedCost: metrics?.accumulated_cost || 0,
+    promptTokens: usage?.prompt_tokens || 0,
+    completionTokens: usage?.completion_tokens || 0,
+    totalTokens: usage?.total_tokens || 0,
+  }));
 }
 
 export function handleActionMessage(message: ActionMessage) {
