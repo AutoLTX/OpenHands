@@ -84,15 +84,16 @@ const messageActions = {
 
 function showLLMMetricsAlert(message: ActionMessage) {
   const metrics = message.llm_metrics;
-  const usage = message.tool_call_metadata?.model_response?.usage;
+  if (!metrics) return;
 
-  if (!metrics && !usage) return;
+  const latestUsage = metrics.token_usages?.[0];
+  const totalTokens = latestUsage ? latestUsage.prompt_tokens + latestUsage.completion_tokens : 0;
 
   store.dispatch(updateLLMMetrics({
-    accumulatedCost: metrics?.accumulated_cost || 0,
-    promptTokens: usage?.prompt_tokens || 0,
-    completionTokens: usage?.completion_tokens || 0,
-    totalTokens: usage?.total_tokens || 0,
+    accumulatedCost: metrics.accumulated_cost || 0,
+    promptTokens: latestUsage?.prompt_tokens || 0,
+    completionTokens: latestUsage?.completion_tokens || 0,
+    totalTokens: totalTokens,
   }));
 }
 

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import OpenHands from "#/api/open-hands";
 import { setInitialPrompt } from "#/state/initial-query-slice";
 import { RootState } from "#/store";
+import { resetLLMMetrics } from "#/state/llm-metrics-slice";
 
 export const useCreateConversation = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ export const useCreateConversation = () => {
       );
     },
     onSuccess: async ({ conversation_id: conversationId }, { q }) => {
+      dispatch(resetLLMMetrics());
       posthog.capture("initial_query_submitted", {
         entry_point: "task_form",
         query_character_length: q?.length,

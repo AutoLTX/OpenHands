@@ -25,6 +25,7 @@ import { useGetTrajectory } from "#/hooks/mutation/use-get-trajectory";
 import { downloadTrajectory } from "#/utils/download-files";
 import { CostToggleButton } from "#/components/shared/buttons/cost-toggle-button";
 import { setCostVisibility } from "#/state/cost-visibility-slice";
+import { resetLLMMetrics } from "#/state/llm-metrics-slice";
 
 function getEntryPoint(
   hasRepository: boolean | null,
@@ -123,7 +124,6 @@ export function ChatInterface() {
 
   const handleToggleSwitch = (isOn: boolean) => {
     setIsFeatureEnabled(isOn);
-    // 这里可以添加其他处理逻辑
   };
 
   const handleCostToggle = (isVisible: boolean) => {

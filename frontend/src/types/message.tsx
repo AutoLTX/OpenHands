@@ -34,6 +34,13 @@ export interface ActionMessage {
       latency: number;
       timestamp: string;
     }>;
+    token_usages: Array<{
+      prompt_tokens: number;
+      completion_tokens: number;
+      cache_read_tokens: number;
+      cache_write_tokens: number;
+      response_id: string;
+    }>;
   };
 }
 
